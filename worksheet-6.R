@@ -4,14 +4,14 @@ library(readr)
 library(dplyr)
 
 person <- read_csv(
-  file = ...,
+  file = 'data/census_pums/sample.csv',
   col_types = cols_only(
-    ... = 'i',  # Age
-    ... = 'd',  # Wages or salary income past 12 months
-    ... = 'i',  # Educational attainment
-    ... = 'f',   # Sex
-    ... = 'f',  # Occupation recode based on 2010 OCC codes
-    ... = 'i')) # Usual hours worked per week past 12 months
+    AGEP = 'i',  # Age
+    WAGP = 'd',  # Wages or salary income past 12 months
+    SCHL = 'i',  # Educational attainment
+    SEX = 'f',   # Sex
+    OCCP = 'f',  # Occupation recode based on 2010 OCC codes
+    WKHP = 'i')) # Usual hours worked per week past 12 months
 
 person <- within(person, {
   SCHL <- factor(SCHL)
@@ -27,10 +27,13 @@ person <- within(person, {
     WAGP < max(WAGP, na.rm = TRUE))
 
 # Formula Notation
+##lm function only uses least squares
 
 fit <- lm(
-  formula = ...,
-  data = ...)
+  formula = WAGP ~ SCHL,
+  data =person)
+##~separates the dependent from the independent variables
+
 
 fit <- lm(
   ...,
@@ -38,44 +41,35 @@ fit <- lm(
 
 # Metadata matters
 
-fit <- lm(
-  ...,
-  person)
-
 # GLM families
-
-fit <- ...(...,
-  ...,
-  person)
 
 # Logistic Regression
 
-fit <- glm(...,
-  ...,
-  person)
+fit <- glm(SEX~WAGP,
+  family=binomial,
+  data=person)
 
-...(fit, update(fit, ...), test = 'Chisq')
+anova(fit, update(fit, SEX~1), test = 'Chisq')
 
 # Random Intercept
 
-library(...)
-fit <- ...(
-  ...,
+library(lme4)
+fit <- lmer(log(WAGP)~(1|OCCP)+SCHL, 
   data = person)
 
 # Random Slope
 
 fit <- lmer(
-  ...
+  log(WAGP)~(WKHP|SCHL),
   data = person)
 
 fit <- lmer(
   log(WAGP) ~ (WKHP | SCHL),
   data = person,
-  control = ...)
+  control = lmerControl(optimizer='bobyqa'))
 
 ggplot(person,
   aes(x = WKHP, y = log(WAGP), color = SCHL)) +
   geom_point() +
-  geom_line(...) +
+  geom_line(aes(y=predict(fit))) +
   labs(title = 'Random intercept and slope with lmer')
