@@ -33,9 +33,9 @@ prep_access(data_path = here("storm_project"),
             access_path = here("storm_project", "metadata", "access.csv"))
 edit_access(metadata_dir = here("storm_project", "metadata"))
 
-...(data_path = here("storm_project"),
-                attributes_path = here("storm_project", "metadata", "..."))
-...(metadata_dir = here("storm_project", "metadata"))
+prep_attributes(data_path = here("storm_project"),
+                attributes_path = here("storm_project", "metadata", "attributes.csv"))
+edit_attributes(metadata_dir = here("storm_project", "metadata"))
 
 ...(path = here("storm_project", "metadata"))
 
